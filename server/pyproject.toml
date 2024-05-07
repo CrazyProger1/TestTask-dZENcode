@@ -9,6 +9,9 @@ readme = "README.md"
 python = "^3.12"
 Django = "^5.0.5"
 django-environ = "^0.11.2"
+drf-yasg = "^1.21.7"
+setuptools = "^69.5.1"
+djangorestframework-simplejwt = "^5.3.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.4.2"

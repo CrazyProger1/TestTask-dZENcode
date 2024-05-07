@@ -6,3 +6,7 @@ from .models import Comment, CommentLike
 
 def get_all_comments() -> models.QuerySet[Comment]:
     return get_all_objects(Comment)
+
+
+def get_comment_replies(comment: Comment) -> models.QuerySet[Comment]:
+    return comment.replies.all()

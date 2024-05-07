@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "test-task"
+name = "Comment-System"
 version = "0.0.1"
 description = "Test task for dZENcode"
 authors = ["CrazyProger1 <crazyproger1@gmail.com>"]

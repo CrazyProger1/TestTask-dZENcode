@@ -25,10 +25,18 @@ test-admin:
 .PHONY: update
 update: install migrate;
 
-.PHONY: format
-format:
+
+.PHONY: code-check
+code-check:
 	poetry run python -m black .
+	poetry run python -m mypy .
 
 .PHONY: test
 test:
 	poetry run python manage.py test
+
+
+.PHONY: coverage-report
+coverage-report:
+	poetry run coverage run manage.py test
+	poetry run coverage report -m

@@ -4,7 +4,7 @@ import os
 import sys
 
 
-def main():
+def main():  # pragma: nocover
     """Run administrative tasks."""
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "server.settings.development")
     try:

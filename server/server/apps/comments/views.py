@@ -3,9 +3,6 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import (
     viewsets,
     permissions,
-    decorators,
-    response,
-    request,
     exceptions,
     filters,
 )
@@ -34,9 +31,8 @@ class CommentViewSet(viewsets.ModelViewSet):
     page_size = COMMENT_PAGE_SIZE
     permission_classes = (permissions.IsAuthenticated,)
     filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
-    ordering_fields = [
-        "created_at",
-    ]
+    ordering_fields = ("created_at",)
+    ordering = "-created_at"
     filterset_class = CommentFilter
 
     def get_queryset(self):
@@ -50,6 +46,10 @@ class ReplyViewSet(viewsets.ModelViewSet):
     serializer_class = ReplyCommentSerializer
     page_size = COMMENT_PAGE_SIZE
     permission_classes = (permissions.IsAuthenticated, IsCommentOwnerOrReadOnly)
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+    ordering_fields = ("created_at",)
+    ordering = "-created_at"
+    filterset_class = CommentFilter
 
     def get_parent_object(self):
         pk = self.kwargs.get("comment_id")

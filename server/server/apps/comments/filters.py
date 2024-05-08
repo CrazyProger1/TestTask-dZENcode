@@ -6,4 +6,4 @@ from .models import Comment
 class CommentFilter(filters.FilterSet):
     class Meta:
         model = Comment
-        fields = ("user",)
+        fields = ("user", "created_at",)

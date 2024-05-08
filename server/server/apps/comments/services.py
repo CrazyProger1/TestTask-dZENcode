@@ -21,11 +21,22 @@ def get_all_comments() -> models.QuerySet[Comment]:
 
 
 def get_parent_comments() -> models.QuerySet[Comment]:
-    return Comment.objects.filter(reply_to=None)
+    return Comment.objects.filter(reply_to__isnull=True)
+
+
+def get_reply_comments() -> models.QuerySet[Comment]:
+    return Comment.objects.filter(reply_to__isnull=False)
 
 
 def get_comment_replies(comment: Comment) -> models.QuerySet[Comment]:
     return comment.replies.all()
+
+
+def get_comment_or_none(**filters) -> Comment | None:
+    try:
+        return Comment.objects.get(**filters)
+    except Comment.DoesNotExist:
+        return None
 
 
 def get_comment_likes(comment: Comment) -> models.QuerySet[CommentLike]:

@@ -3,7 +3,6 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import (
     viewsets,
     permissions,
-    exceptions,
     filters,
 )
 
@@ -12,13 +11,14 @@ from .services import (
     get_all_likes,
     get_parent_comments,
     get_reply_comments,
-    get_comment_or_none,
-    get_all_comments,
+    get_comment_or_404,
+    get_all_comments, get_all_attachments,
+    get_comment_attachments
 )
 from .serializers import (
     CommentSerializer,
     CommentLikeSerializer,
-    ReplyCommentSerializer,
+    ReplyCommentSerializer, CommentAttachmentSerializer,
 )
 from .constants import COMMENT_PAGE_SIZE
 from .permissions import IsCommentOwnerOrReadOnly
@@ -53,21 +53,34 @@ class ReplyViewSet(viewsets.ModelViewSet):
 
     def get_parent_object(self):
         pk = self.kwargs.get("comment_id")
-        return get_comment_or_none(pk=pk)
+        return get_comment_or_404(pk=pk)
 
     def perform_create(self, serializer):
         serializer.save(reply_to=self.get_parent_object())
 
     def get_queryset(self):
         comment = self.get_parent_object()
-
-        if not comment:
-            raise exceptions.NotFound(detail="Parent comment not found")
-
         return get_comment_replies(comment=comment)
 
 
 class CommentLikeViewSet(viewsets.ModelViewSet):
     queryset = get_all_likes()
     serializer_class = CommentLikeSerializer
-    permission_classes = (permissions.IsAuthenticated, IsCommentOwnerOrReadOnly)
+    permission_classes = (permissions.IsAuthenticated,)
+
+
+class CommentAttachmentViewSet(viewsets.ModelViewSet):
+    queryset = get_all_attachments()
+    serializer_class = CommentAttachmentSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def perform_create(self, serializer):
+        serializer.save(comment=self.get_parent_object())
+
+    def get_parent_object(self):
+        pk = self.kwargs.get("comment_id")
+        return get_comment_or_404(pk=pk)
+
+    def get_queryset(self):
+        comment = self.get_parent_object()
+        return get_comment_attachments(comment=comment)

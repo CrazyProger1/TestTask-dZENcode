@@ -5,6 +5,7 @@ from .views import (
     CommentViewSet,
     CommentLikeViewSet,
     ReplyViewSet,
+    CommentAttachmentViewSet
 )
 
 router = routers.DefaultRouter()
@@ -24,7 +25,11 @@ router.register(
     ReplyViewSet,
     basename="comment-replies",
 )
-
+router.register(
+    r"comments/(?P<comment_id>\d+)/attachments",
+    CommentAttachmentViewSet,
+    basename="comment-attachments",
+)
 urlpatterns = [
     path("api/v1/", include(router.urls)),
 ]

@@ -7,6 +7,7 @@ from .views import (
     ReplyViewSet,
     CommentAttachmentViewSet,
 )
+from .consumers import CommentConsumer
 
 router = routers.DefaultRouter()
 
@@ -32,4 +33,8 @@ router.register(
 )
 urlpatterns = [
     path("api/v1/", include(router.urls)),
+]
+
+ws_urlpatterns = [
+    path("ws/comments", CommentConsumer.as_asgi(), name="ws-comments")
 ]

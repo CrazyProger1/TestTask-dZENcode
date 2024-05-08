@@ -14,7 +14,7 @@ class IsCommentOwnerOrReadOnly(permissions.BasePermission):
 class CanAddAttachments(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.method == "POST":
-            comment_id = view.kwargs['comment_id']
+            comment_id = view.kwargs["comment_id"]
             comment = get_comment_or_404(pk=comment_id)
             return comment.user == request.user
 

@@ -99,11 +99,10 @@ class CommentAttachmentSerializer(serializers.ModelSerializer):
 
     def to_representation(self, attachment):
         representation = super().to_representation(attachment)
-        representation["file"] = self.context["request"].build_absolute_uri(reverse.reverse_lazy(
-            "comment-attachments-file",
-            kwargs={
-                "pk": attachment.pk,
-                "comment_id": attachment.comment.pk
-            }
-        ))
+        representation["file"] = self.context["request"].build_absolute_uri(
+            reverse.reverse_lazy(
+                "comment-attachments-file",
+                kwargs={"pk": attachment.pk, "comment_id": attachment.comment.pk},
+            )
+        )
         return representation

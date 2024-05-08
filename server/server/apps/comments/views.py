@@ -94,7 +94,7 @@ class CommentAttachmentViewSet(CommentParentViewSet):
         comment = self.get_parent_object()
         return get_comment_attachments(comment=comment)
 
-    @decorators.action(detail=True, methods=['get'])
+    @decorators.action(detail=True, methods=["get"])
     def file(self, request, comment_id: int, pk: int):
         attachment = self.get_object()
-        return FileResponse(open(attachment.file.name, 'rb'), as_attachment=True)
+        return FileResponse(open(attachment.file.name, "rb"), as_attachment=True)

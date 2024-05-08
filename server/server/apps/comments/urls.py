@@ -36,5 +36,5 @@ urlpatterns = [
 ]
 
 ws_urlpatterns = [
-    path("ws/comments", CommentConsumer.as_asgi(), name="ws-comments")
+    path("ws/comments/", CommentConsumer.as_asgi(), name="ws-comments"),
 ]

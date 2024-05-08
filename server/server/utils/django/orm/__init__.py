@@ -1,5 +1,3 @@
-from .services import get_all_objects
+from .services import get_all_objects, get_object_or_404
 
-__all__ = [
-    "get_all_objects",
-]
+__all__ = ["get_all_objects", get_object_or_404]

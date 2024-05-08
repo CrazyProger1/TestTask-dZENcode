@@ -15,6 +15,7 @@ djangorestframework-simplejwt = "^5.3.1"
 djoser = "^2.2.2"
 django-filter = "^24.2"
 channels = {extras = ["daphne"], version = "^4.1.0"}
+channels-redis = "^4.2.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.4.2"

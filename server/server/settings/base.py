@@ -8,6 +8,8 @@ env = environ.Env(
     USE_I18N=(bool, True),
     USE_TZ=(bool, True),
     CONTACT_EMAIL=(str, "crazyproger1@gmail.com"),
+    REDIS_HOST=(str, "localhost"),
+    REDIS_PORT=(int, 6379),
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -149,4 +151,11 @@ LOGGING = {
             "propagate": False,
         },
     },
+}
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {"hosts": [(env("REDIS_HOST"), env("REDIS_PORT"))]},
+    }
 }

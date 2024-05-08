@@ -17,6 +17,10 @@ def count_dislikes(comment: Comment):
     return comment.likes.filter(positive=False).count()
 
 
+def get_or_create_like(**data) -> CommentLike:
+    return CommentLike.objects.get_or_create(**data)[0]
+
+
 def get_all_likes() -> models.QuerySet[CommentLike]:
     return get_all_objects(CommentLike)
 

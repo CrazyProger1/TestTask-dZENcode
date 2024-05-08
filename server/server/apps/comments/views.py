@@ -41,7 +41,13 @@ class CommentViewSet(viewsets.ModelViewSet):
         return self.queryset
 
 
-class ReplyViewSet(viewsets.ModelViewSet):
+class CommentParentViewSet(viewsets.ModelViewSet):
+    def get_parent_object(self):
+        pk = self.kwargs.get("comment_id")
+        return get_comment_or_404(pk=pk)
+
+
+class ReplyViewSet(CommentParentViewSet):
     queryset = get_reply_comments()
     serializer_class = ReplyCommentSerializer
     page_size = COMMENT_PAGE_SIZE
@@ -63,23 +69,22 @@ class ReplyViewSet(viewsets.ModelViewSet):
         return get_comment_replies(comment=comment)
 
 
-class CommentLikeViewSet(viewsets.ModelViewSet):
+class CommentLikeViewSet(CommentParentViewSet):
     queryset = get_all_likes()
     serializer_class = CommentLikeSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
+    def perform_create(self, serializer):
+        serializer.save(comment=self.get_parent_object())
 
-class CommentAttachmentViewSet(viewsets.ModelViewSet):
+
+class CommentAttachmentViewSet(CommentParentViewSet):
     queryset = get_all_attachments()
     serializer_class = CommentAttachmentSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
     def perform_create(self, serializer):
         serializer.save(comment=self.get_parent_object())
-
-    def get_parent_object(self):
-        pk = self.kwargs.get("comment_id")
-        return get_comment_or_404(pk=pk)
 
     def get_queryset(self):
         comment = self.get_parent_object()

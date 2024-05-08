@@ -4,7 +4,7 @@ from functools import cache
 from rest_framework import serializers
 
 from .models import Comment, CommentLike, CommentAttachment
-from .services import count_likes, count_dislikes
+from .services import count_likes, count_dislikes, get_or_create_like
 from .constants import ALLOWED_FILE_EXTENSIONS, IMAGE_FILE_EXTENSIONS, TEXT_FILE_EXTENSIONS
 
 
@@ -15,13 +15,16 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = "__all__"
-        read_only_fields = ("created_at",)
+        read_only_fields = ("created_at", "user")
 
     def get_likes_count(self, comment: Comment):
         return count_likes(comment=comment)
 
     def get_dislikes_count(self, comment: Comment):
         return count_dislikes(comment=comment)
+
+    def save(self, **kwargs):
+        return super().save(**kwargs, user=self.context["request"].user)
 
 
 class ReplyCommentSerializer(CommentSerializer):
@@ -31,13 +34,30 @@ class ReplyCommentSerializer(CommentSerializer):
         read_only_fields = (
             "created_at",
             "reply_to",
+            "user",
         )
+
+    def save(self, **kwargs):
+        return super().save(**kwargs, user=self.context["request"].user)
 
 
 class CommentLikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommentLike
         fields = "__all__"
+        read_only_fields = ("comment", "user")
+
+    def create(self, validated_data):
+        like = get_or_create_like(
+            comment=validated_data["comment"],
+            user=validated_data["user"]
+        )
+        like.positive = validated_data["positive"]
+        like.save()
+        return like
+
+    def save(self, **kwargs):
+        return super().save(**kwargs, user=self.context["request"].user)
 
 
 class CommentAttachmentSerializer(serializers.ModelSerializer):

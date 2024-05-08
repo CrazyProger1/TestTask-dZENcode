@@ -6,7 +6,9 @@ class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-    reply_to = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, related_name="replies")
+    reply_to = models.ForeignKey(
+        "self", on_delete=models.SET_NULL, null=True, blank=True, related_name="replies"
+    )
     has_attachment = models.BooleanField(default=False)
 
     class Meta:
@@ -26,3 +28,4 @@ class CommentLike(models.Model):
     class Meta:
         verbose_name = "Like"
         verbose_name_plural = "Likes"
+        unique_together = ("user", "comment")

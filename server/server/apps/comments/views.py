@@ -6,13 +6,17 @@ from rest_framework import (
     request,
 )
 
-from .services import get_all_comments, get_comment_replies
-from .serializers import CommentSerializer
+from .services import (
+    get_comment_replies,
+    get_all_likes,
+    get_parent_comments,
+)
+from .serializers import CommentSerializer, CommentLikeSerializer
 from .constants import COMMENT_PAGE_SIZE
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    queryset = get_all_comments()
+    queryset = get_parent_comments()
     serializer_class = CommentSerializer
     page_size = COMMENT_PAGE_SIZE
     permission_classes = (permissions.IsAuthenticated,)
@@ -29,3 +33,9 @@ class CommentViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(queryset, many=True)
         return response.Response(serializer.data)
+
+
+class CommentLikeViewSet(viewsets.ModelViewSet):
+    queryset = get_all_likes()
+    serializer_class = CommentLikeSerializer
+    permission_classes = (permissions.IsAuthenticated,)

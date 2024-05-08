@@ -26,7 +26,7 @@ from .serializers import (
     CommentAttachmentSerializer,
 )
 from .constants import COMMENT_PAGE_SIZE
-from .permissions import IsCommentOwnerOrReadOnly
+from .permissions import IsCommentOwnerOrReadOnly, CanAddAttachments
 from .filters import CommentFilter
 
 
@@ -86,7 +86,7 @@ class CommentLikeViewSet(CommentParentViewSet):
 class CommentAttachmentViewSet(CommentParentViewSet):
     queryset = get_all_attachments()
     serializer_class = CommentAttachmentSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, CanAddAttachments)
 
     def perform_create(self, serializer):
         serializer.save(comment=self.get_parent_object())

@@ -6,7 +6,6 @@ from rest_framework import (
     permissions,
     filters,
     decorators,
-    response,
 )
 
 from .services import (

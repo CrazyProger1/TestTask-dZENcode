@@ -1,9 +1,12 @@
+from django.http import FileResponse
 from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import (
     viewsets,
     permissions,
     filters,
+    decorators,
+    response,
 )
 
 from .services import (
@@ -12,13 +15,15 @@ from .services import (
     get_parent_comments,
     get_reply_comments,
     get_comment_or_404,
-    get_all_comments, get_all_attachments,
-    get_comment_attachments
+    get_all_comments,
+    get_all_attachments,
+    get_comment_attachments,
 )
 from .serializers import (
     CommentSerializer,
     CommentLikeSerializer,
-    ReplyCommentSerializer, CommentAttachmentSerializer,
+    ReplyCommentSerializer,
+    CommentAttachmentSerializer,
 )
 from .constants import COMMENT_PAGE_SIZE
 from .permissions import IsCommentOwnerOrReadOnly
@@ -89,3 +94,8 @@ class CommentAttachmentViewSet(CommentParentViewSet):
     def get_queryset(self):
         comment = self.get_parent_object()
         return get_comment_attachments(comment=comment)
+
+    @decorators.action(detail=True, methods=['get'])
+    def file(self, request, comment_id: int, pk: int):
+        attachment = self.get_object()
+        return FileResponse(open(attachment.file.name, 'rb'), as_attachment=True)

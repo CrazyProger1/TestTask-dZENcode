@@ -1,11 +1,22 @@
 import pathlib
 from functools import cache
 
-from rest_framework import serializers
+from rest_framework import serializers, reverse
 
-from .models import Comment, CommentLike, CommentAttachment
-from .services import count_likes, count_dislikes, get_or_create_like
-from .constants import ALLOWED_FILE_EXTENSIONS, IMAGE_FILE_EXTENSIONS, TEXT_FILE_EXTENSIONS
+from .models import (
+    Comment,
+    CommentLike,
+    CommentAttachment,
+)
+from .services import (
+    count_likes,
+    count_dislikes,
+    get_or_create_like,
+)
+from .constants import (
+    ALLOWED_FILE_EXTENSIONS,
+    IMAGE_FILE_EXTENSIONS,
+)
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -49,8 +60,7 @@ class CommentLikeSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         like = get_or_create_like(
-            comment=validated_data["comment"],
-            user=validated_data["user"]
+            comment=validated_data["comment"], user=validated_data["user"]
         )
         like.positive = validated_data["positive"]
         like.save()
@@ -64,7 +74,10 @@ class CommentAttachmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommentAttachment
         fields = "__all__"
-        read_only_fields = ("type", "comment",)
+        read_only_fields = (
+            "type",
+            "comment",
+        )
 
     @staticmethod
     @cache
@@ -83,3 +96,14 @@ class CommentAttachmentSerializer(serializers.ModelSerializer):
         ext = self.get_fileext(file.name)
         filetype = "IMG" if ext in IMAGE_FILE_EXTENSIONS else "TXT"
         return super().save(**kwargs, type=filetype)
+
+    def to_representation(self, attachment):
+        representation = super().to_representation(attachment)
+        representation["file"] = self.context["request"].build_absolute_uri(reverse.reverse_lazy(
+            "comment-attachments-file",
+            kwargs={
+                "pk": attachment.pk,
+                "comment_id": attachment.comment.pk
+            }
+        ))
+        return representation

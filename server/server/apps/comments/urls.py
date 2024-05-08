@@ -5,7 +5,7 @@ from .views import (
     CommentViewSet,
     CommentLikeViewSet,
     ReplyViewSet,
-    CommentAttachmentViewSet
+    CommentAttachmentViewSet,
 )
 
 router = routers.DefaultRouter()

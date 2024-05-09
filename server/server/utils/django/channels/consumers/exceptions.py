@@ -1,8 +1,8 @@
 class WebsocketError(Exception):
     type: str = "WebsocketError"
-    details: str = None
+    details: str | None = None
 
-    def __init__(self, details: str = None):
+    def __init__(self, details: str | None = None):
         self.details = details
         super().__init__(self.type)
 

@@ -23,7 +23,9 @@ class JWTAuthMiddleware(BaseMiddleware):
     @staticmethod
     def _decode_jwt(token: bytes) -> dict:
         payload = decode(
-            token, settings.SECRET_KEY, algorithms=settings.SIMPLE_JWT["ALGORITHM"]
+            token,
+            settings.SECRET_KEY,
+            algorithms=settings.SIMPLE_JWT["ALGORITHM"],
         )
         return payload
 
@@ -39,13 +41,15 @@ class JWTAuthMiddleware(BaseMiddleware):
                 payload = self._decode_jwt(token=token)
                 user = await self._get_user(pk=payload["user_id"])
                 scope["user"] = user
+                logger.info(f"User authenticated: {user}")
                 return
         except Exception as e:
-            print(f"Exception: {e}")
+            logger.warning(f"User not authenticated: {type(e).__name__}: {e}")
 
         scope["user"] = AnonymousUser()
 
     async def __call__(self, scope, receive, send):
+        logger.info(f"Trying to authenticate user using {type(self).__name__}...")
         close_old_connections()
         await self._authenticate(scope=scope)
         return await super().__call__(scope, receive, send)

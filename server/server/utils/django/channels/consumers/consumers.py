@@ -28,7 +28,9 @@ class EventBasedAsyncWebsocketConsumer(AsyncJsonWebsocketConsumer):
     group: str
     handlers: dict[str, Callable] = {}
 
-    async def _send_response(self, success: bool, data: dict | None = None, event_type: str | None = None):
+    async def _send_response(
+        self, success: bool, data: dict | None = None, event_type: str | None = None
+    ):
         logger.info(f"Sending response: {data}")
 
         await self.send_json(
@@ -41,11 +43,12 @@ class EventBasedAsyncWebsocketConsumer(AsyncJsonWebsocketConsumer):
 
     async def _send_error(self, error: WebsocketError):
         await self._send_response(
-            success=False, data={
+            success=False,
+            data={
                 "error": error.type,
                 "details": error.details,
             },
-            event_type="error"
+            event_type="error",
         )
 
     async def _parse_event(self, content: dict) -> Event | None:
@@ -54,7 +57,6 @@ class EventBasedAsyncWebsocketConsumer(AsyncJsonWebsocketConsumer):
             logger.info(f"Received event: {event}")
             return event
         except TypeError:
-            logger.info(f"Got message with invalid format: {content}")
             raise InvalidFormatError(f"Can't parse event: {content}")
 
     async def _handle_event(self, event: Event):
@@ -106,10 +108,10 @@ class EventBasedAsyncWebsocketConsumer(AsyncJsonWebsocketConsumer):
 
             if event:
                 response = await self._handle_event(event=event)
-                await self._send_response(success=True, data=response, event_type=event.type)
+                await self._send_response(
+                    success=True, data=response, event_type=event.type
+                )
 
         except WebsocketError as e:
-            logger.error(f"Error occurred: {e}")
-            await self._send_error(
-                error=e
-            )
+            logger.error(f"{type(e).__name__}: {e}")
+            await self._send_error(error=e)

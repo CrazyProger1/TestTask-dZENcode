@@ -17,6 +17,7 @@ django-filter = "^24.2"
 channels = { extras = ["daphne"], version = "^4.1.0" }
 channels-redis = "^4.2.0"
 gunicorn = "^22.0.0"
+psycopg2 = "^2.9.9"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -2,10 +2,10 @@ from datetime import timedelta
 
 from .base import *
 
-# ENV_FILE = BASE_DIR / "env/production.env"  # for testing only
+ENV_FILE = BASE_DIR / "env/production.env"  # for testing only
 
 env = environ.Env()
-# environ.Env.read_env(ENV_FILE)  # for testing only
+environ.Env.read_env(ENV_FILE)  # for testing only
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env("SECRET_KEY", str)

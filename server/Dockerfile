@@ -5,11 +5,9 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /usr/src/comment-system
 
-COPY ./requirements/deploy.txt requirements.txt
-
-RUN pip install -r requirements.txt
-
 COPY . /usr/src/comment-system
+
+RUN pip install -r ./requirements/deploy.txt
 
 EXPOSE 8000
 

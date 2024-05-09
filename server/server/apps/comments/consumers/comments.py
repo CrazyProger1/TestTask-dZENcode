@@ -2,12 +2,13 @@ from channels.db import database_sync_to_async
 
 from server.apps.comments.constants import COMMENTS_GROUP
 from server.apps.comments.enums import WebsocketEvents
+from server.apps.comments.serializers import CommentSerializer
+from server.apps.comments.exceptions import ValidationError
+from server.apps.comments.services import get_parent_comments
 from server.utils.django.channels.consumers import (
     EventBasedAsyncWebsocketConsumer,
     Event,
 )
-from server.apps.comments.serializers import CommentSerializer
-from server.apps.comments.exceptions import ValidationError
 
 
 class CommentConsumer(EventBasedAsyncWebsocketConsumer):
@@ -21,6 +22,25 @@ class CommentConsumer(EventBasedAsyncWebsocketConsumer):
 def create_comment_in_db(serializer: CommentSerializer, user) -> dict:
     serializer.save(user=user)
     return serializer.data
+
+
+@database_sync_to_async
+def read_comments_from_db(order_by: tuple[str] = ("id",), filters: dict = None, pagination: tuple = (25, 0)):
+    if not filters:
+        filters = {}
+
+    limit, offset = pagination
+
+    comments = get_parent_comments()
+
+    queryset = comments.order_by(*order_by).filter(**filters)[offset:offset + limit]
+    serializer = CommentSerializer(data=queryset, many=True)
+    serializer.is_valid()
+
+    return {
+        "count": comments.count(),
+        "results": serializer.data,
+    }
 
 
 @CommentConsumer.event(WebsocketEvents.CONNECTED)
@@ -56,6 +76,15 @@ async def create_comment(consumer: CommentConsumer, event: Event):
     return data
 
 
-@CommentConsumer.event(WebsocketEvents.LIST_COMMENTS)
-async def list_comments(consumer: CommentConsumer, event: Event):
-    pass
+@CommentConsumer.event(WebsocketEvents.READ_COMMENTS)
+async def read_comments(consumer: CommentConsumer, event: Event):
+    order_by = event.data.get("order_by", ("-created_at",))
+    filters = event.data.get("filters", {})
+    limit = event.data.get("limit", 25)
+    offset = event.data.get("offset", 0)
+
+    return await read_comments_from_db(
+        order_by=order_by,
+        filters=filters,
+        pagination=(limit, offset),
+    )

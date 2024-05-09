@@ -25,7 +25,6 @@ from server.apps.comments.serializers import (
     ReplyCommentSerializer,
     CommentAttachmentSerializer,
 )
-from server.apps.comments.constants import COMMENT_PAGE_SIZE
 from server.apps.comments.permissions import IsCommentOwnerOrReadOnly, CanAddAttachments
 from server.apps.comments.filters import CommentFilter
 
@@ -33,13 +32,11 @@ from server.apps.comments.filters import CommentFilter
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = get_all_comments()
     serializer_class = CommentSerializer
-    page_size = COMMENT_PAGE_SIZE
     permission_classes = (permissions.IsAuthenticated,)
     filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
     ordering_fields = ("created_at",)
     ordering = "-created_at"
     filterset_class = CommentFilter
-
     def get_queryset(self):
         if self.action == "list":
             return get_parent_comments()
@@ -55,7 +52,6 @@ class CommentParentViewSet(viewsets.ModelViewSet):
 class ReplyViewSet(CommentParentViewSet):
     queryset = get_reply_comments()
     serializer_class = ReplyCommentSerializer
-    page_size = COMMENT_PAGE_SIZE
     permission_classes = (permissions.IsAuthenticated, IsCommentOwnerOrReadOnly)
     filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
     ordering_fields = ("created_at",)

@@ -1,16 +1,19 @@
-from dataclasses import dataclass
-
-
 class WebsocketError(Exception):
-    detail: str
+    type: str = "WebsocketError"
+    details: str = None
 
-    def __init__(self):
-        super().__init__(self.detail)
+    def __init__(self, details: str = None):
+        self.details = details
+        super().__init__(self.type)
 
 
-class AuthError(WebsocketError):
-    detail = "Authentication required"
+class AuthenticationError(WebsocketError):
+    type = "AuthenticationError"
 
 
 class InvalidEventError(WebsocketError):
-    detail = "Invalid event"
+    type = "InvalidEventError"
+
+
+class InvalidFormatError(WebsocketError):
+    type = "InvalidFormatError"

@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
 from django.db import close_old_connections
@@ -6,6 +8,8 @@ from channels.middleware import BaseMiddleware
 from channels.db import database_sync_to_async
 
 from jwt import decode
+
+logger = logging.getLogger(__name__)
 
 
 class JWTAuthMiddleware(BaseMiddleware):
@@ -35,6 +39,7 @@ class JWTAuthMiddleware(BaseMiddleware):
                 payload = self._decode_jwt(token=token)
                 user = await self._get_user(pk=payload["user_id"])
                 scope["user"] = user
+                return
         except Exception as e:
             print(f"Exception: {e}")
 

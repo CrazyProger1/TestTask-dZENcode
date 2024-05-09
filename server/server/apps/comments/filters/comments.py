@@ -1,6 +1,6 @@
 import django_filters as filters
 
-from .models import Comment
+from server.apps.comments.models import Comment
 
 
 class CommentFilter(filters.FilterSet):

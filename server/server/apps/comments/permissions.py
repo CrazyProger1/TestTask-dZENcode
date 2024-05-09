@@ -1,6 +1,6 @@
 from rest_framework import permissions
 
-from .services import get_comment_or_404
+from server.apps.comments.services import get_comment_or_404
 
 
 class IsCommentOwnerOrReadOnly(permissions.BasePermission):

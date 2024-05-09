@@ -19,9 +19,7 @@ class JWTAuthMiddleware(BaseMiddleware):
     @staticmethod
     def _decode_jwt(token: bytes) -> dict:
         payload = decode(
-            token,
-            settings.SECRET_KEY,
-            algorithms=settings.SIMPLE_JWT["ALGORITHM"]
+            token, settings.SECRET_KEY, algorithms=settings.SIMPLE_JWT["ALGORITHM"]
         )
         return payload
 
@@ -38,7 +36,7 @@ class JWTAuthMiddleware(BaseMiddleware):
                 user = await self._get_user(pk=payload["user_id"])
                 scope["user"] = user
         except Exception as e:
-            print(f'Exception: {e}')
+            print(f"Exception: {e}")
 
         scope["user"] = AnonymousUser()
 

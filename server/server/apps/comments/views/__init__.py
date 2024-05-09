@@ -8,7 +8,7 @@ from rest_framework import (
     decorators,
 )
 
-from .services import (
+from server.apps.comments.services import (
     get_comment_replies,
     get_all_likes,
     get_parent_comments,
@@ -17,17 +17,17 @@ from .services import (
     get_all_comments,
     get_all_attachments,
     get_comment_attachments,
-    mark_comment_has_attachment
+    mark_comment_has_attachment,
 )
-from .serializers import (
+from server.apps.comments.serializers import (
     CommentSerializer,
     CommentLikeSerializer,
     ReplyCommentSerializer,
     CommentAttachmentSerializer,
 )
-from .constants import COMMENT_PAGE_SIZE
-from .permissions import IsCommentOwnerOrReadOnly, CanAddAttachments
-from .filters import CommentFilter
+from server.apps.comments.constants import COMMENT_PAGE_SIZE
+from server.apps.comments.permissions import IsCommentOwnerOrReadOnly, CanAddAttachments
+from server.apps.comments.filters import CommentFilter
 
 
 class CommentViewSet(viewsets.ModelViewSet):

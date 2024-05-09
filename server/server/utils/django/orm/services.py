@@ -1,10 +1,20 @@
 from django.db import models
-from django import shortcuts
 
 
 def get_all_objects(model: type[models.Model]) -> models.QuerySet[models.Model]:
     return model.objects.all()
 
 
-def get_object_or_404(model: type[models.Model], **filters) -> models.Model:
-    return shortcuts.get_object_or_404(model, **filters)
+def count_objects(model: type[models.Model], *fargs, **fkwargs) -> int:
+    return model.objects.filter(*fargs, **fkwargs).count()
+
+
+def get_object_or_none(model: type[models.Model], *fargs, **fkwargs) -> models.Model:
+    try:
+        return model.objects.get(*fargs, **fkwargs)
+    except model.DoesNotExist:
+        return None
+
+
+def get_or_create_object(model: type[models.Model], **fkwargs) -> models.Model:
+    return model.objects.get_or_create(**fkwargs)[0]

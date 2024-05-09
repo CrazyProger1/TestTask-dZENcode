@@ -4,8 +4,8 @@ from dataclasses import dataclass, field
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from django.contrib.auth.models import User, AnonymousUser
 
-from .constants import COMMENTS_GROUP
-from .enums import WebsocketEvent, WebsocketError
+from server.apps.comments.constants import COMMENTS_GROUP
+from server.apps.comments.enums import WebsocketEvent, WebsocketError
 
 logger = logging.getLogger(__name__)
 
@@ -20,12 +20,14 @@ class Event:
 class CommentConsumer(AsyncJsonWebsocketConsumer):
     group = COMMENTS_GROUP
 
-    async def _send_response(self, success: bool, data: dict = None):
+    async def _send_response(self, success: bool, data: dict | None = None):
         logger.info(f"Sending response: {data}")
-        await self.send_json({
-            "success": success,
-            "data": data,
-        })
+        await self.send_json(
+            {
+                "success": success,
+                "data": data,
+            }
+        )
 
     async def _send_error(self, detail: str):
         await self._send_response(success=False, data={"detail": detail})
@@ -57,17 +59,13 @@ class CommentConsumer(AsyncJsonWebsocketConsumer):
 
     async def connect(self):
         await self.accept()
-        await self.channel_layer.group_add(
-            group=self.group,
-            channel=self.channel_name
-        )
+        await self.channel_layer.group_add(group=self.group, channel=self.channel_name)
 
         logger.info(f"Client connected: {self.channel_name}")
 
     async def disconnect(self, code):
         await self.channel_layer.group_discard(
-            group=self.group,
-            channel=self.channel_name
+            group=self.group, channel=self.channel_name
         )
 
         logger.info(f"Client disconnected: {self.channel_name}")

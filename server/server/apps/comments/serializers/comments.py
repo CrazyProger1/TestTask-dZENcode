@@ -20,4 +20,7 @@ class CommentSerializer(serializers.ModelSerializer):
         return count_dislikes(comment=comment)
 
     def save(self, **kwargs):
-        return super().save(**kwargs, user=self.context["request"].user)
+        user = kwargs.pop("user", None)
+        if not user:
+            user = self.context["request"].user
+        return super().save(**kwargs, user=user)

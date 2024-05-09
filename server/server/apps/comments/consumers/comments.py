@@ -1,3 +1,5 @@
+from channels.db import database_sync_to_async
+
 from server.apps.comments.constants import COMMENTS_GROUP
 from server.apps.comments.enums import WebsocketEvents
 from server.utils.django.channels.consumers import (
@@ -10,6 +12,15 @@ from server.apps.comments.exceptions import ValidationError
 
 class CommentConsumer(EventBasedAsyncWebsocketConsumer):
     group = COMMENTS_GROUP
+
+    async def comment_create(self, event: dict):
+        await self.send_json(content=event)
+
+
+@database_sync_to_async
+def create_comment_in_db(serializer: CommentSerializer, user) -> dict:
+    serializer.save(user=user)
+    return serializer.data
 
 
 @CommentConsumer.event(WebsocketEvents.CONNECTED)
@@ -31,9 +42,18 @@ async def create_comment(consumer: CommentConsumer, event: Event):
     serializer = CommentSerializer(data=event.data)
 
     if not serializer.is_valid():
-        pass
+        raise ValidationError("Comment data is invalid")
 
-    raise ValidationError()
+    data = await create_comment_in_db(serializer, event.user)
+
+    await consumer.channel_layer.group_send(
+        consumer.group,
+        {
+            "type": event.type,
+            "data": data,
+        }
+    )
+    return data
 
 
 @CommentConsumer.event(WebsocketEvents.LIST_COMMENTS)

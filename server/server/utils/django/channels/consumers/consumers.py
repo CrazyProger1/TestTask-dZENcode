@@ -1,3 +1,4 @@
+import json
 import logging
 from dataclasses import dataclass, field
 from functools import wraps
@@ -9,7 +10,8 @@ from django.contrib.auth.models import User, AnonymousUser
 from .exceptions import (
     WebsocketError,
     AuthenticationError,
-    InvalidEventError, InvalidFormatError,
+    InvalidEventError,
+    InvalidFormatError,
 )
 
 logger = logging.getLogger(__name__)
@@ -26,18 +28,25 @@ class EventBasedAsyncWebsocketConsumer(AsyncJsonWebsocketConsumer):
     group: str
     handlers: dict[str, Callable] = {}
 
-    async def _send_response(self, success: bool, data: dict | None = None):
+    async def _send_response(self, success: bool, data: dict | None = None, event_type: str | None = None):
         logger.info(f"Sending response: {data}")
 
         await self.send_json(
             {
+                "type": event_type,
                 "success": success,
                 "data": data,
             }
         )
 
-    async def _send_error(self, error: str, details: str):
-        await self._send_response(success=False, data={"error": error, "details": details})
+    async def _send_error(self, error: WebsocketError):
+        await self._send_response(
+            success=False, data={
+                "error": error.type,
+                "details": error.details,
+            },
+            event_type="error"
+        )
 
     async def _parse_event(self, content: dict) -> Event | None:
         try:
@@ -54,6 +63,12 @@ class EventBasedAsyncWebsocketConsumer(AsyncJsonWebsocketConsumer):
             return await handler(self, event)
 
         raise InvalidEventError(f"Event handler not found: {event.type}")
+
+    async def receive(self, text_data=None, bytes_data=None, **kwargs):
+        try:
+            await super().receive(text_data, bytes_data, **kwargs)
+        except json.JSONDecodeError as e:
+            await self._send_error(InvalidFormatError(str(e)))
 
     async def connect(self):
         await self.accept()
@@ -91,11 +106,10 @@ class EventBasedAsyncWebsocketConsumer(AsyncJsonWebsocketConsumer):
 
             if event:
                 response = await self._handle_event(event=event)
-                await self._send_response(success=True, data=response)
+                await self._send_response(success=True, data=response, event_type=event.type)
 
         except WebsocketError as e:
             logger.error(f"Error occurred: {e}")
             await self._send_error(
-                error=e.type,
-                details=e.details,
+                error=e
             )

@@ -20,6 +20,12 @@ services:
     build:
       context: .
     restart: always
+    environment:
+      - DJANGO_SETTINGS_MODULE=server.settings.production
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=db
+      - POSTGRES_PORT=5432
     ports:
       - 8000:8000
     networks:
@@ -28,6 +34,7 @@ services:
     depends_on:
       - db
       - redis
+
 
 
 volumes:

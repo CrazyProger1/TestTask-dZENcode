@@ -1,0 +1,25 @@
+services:
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+    networks:
+      - redis
+
+  web:
+    build:
+      context: .
+    restart: always
+    environment:
+      - DJANGO_SETTINGS_MODULE=server.settings.development
+    ports:
+      - 8000:8000
+    networks:
+      - redis
+    depends_on:
+      - redis
+
+
+networks:
+  redis:
+    driver: bridge

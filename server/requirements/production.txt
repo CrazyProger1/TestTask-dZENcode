@@ -8,3 +8,4 @@ djoser==2.2.2
 django-filter==24.2
 channels[daphne]==4.1.0
 channels-redis==4.2.0
+gunicorn==22.0.0

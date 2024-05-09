@@ -62,3 +62,9 @@ def get_comment_or_404(**filters) -> Comment:
 
 def get_comment_likes(comment: Comment) -> models.QuerySet[CommentLike]:
     return CommentLike.objects.filter(comment=comment)
+
+
+def mark_comment_has_attachment(comment: Comment):
+    if not comment.has_attachment:
+        comment.has_attachment = True
+        comment.save()

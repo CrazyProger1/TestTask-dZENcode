@@ -17,6 +17,7 @@ from .services import (
     get_all_comments,
     get_all_attachments,
     get_comment_attachments,
+    mark_comment_has_attachment
 )
 from .serializers import (
     CommentSerializer,
@@ -61,10 +62,6 @@ class ReplyViewSet(CommentParentViewSet):
     ordering = "-created_at"
     filterset_class = CommentFilter
 
-    def get_parent_object(self):
-        pk = self.kwargs.get("comment_id")
-        return get_comment_or_404(pk=pk)
-
     def perform_create(self, serializer):
         serializer.save(reply_to=self.get_parent_object())
 
@@ -88,7 +85,9 @@ class CommentAttachmentViewSet(CommentParentViewSet):
     permission_classes = (permissions.IsAuthenticated, CanAddAttachments)
 
     def perform_create(self, serializer):
-        serializer.save(comment=self.get_parent_object())
+        comment = self.get_parent_object()
+        mark_comment_has_attachment(comment=comment)
+        serializer.save(comment=comment)
 
     def get_queryset(self):
         comment = self.get_parent_object()

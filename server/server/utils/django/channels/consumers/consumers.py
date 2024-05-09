@@ -29,7 +29,7 @@ class EventBasedAsyncWebsocketConsumer(AsyncJsonWebsocketConsumer):
     handlers: dict[str, Callable] = {}
 
     async def _send_response(
-        self, success: bool, data: dict | None = None, event_type: str | None = None
+            self, success: bool, data: dict | None = None, event_type: str | None = None
     ):
         logger.info(f"Sending response: {data}")
 
@@ -60,6 +60,8 @@ class EventBasedAsyncWebsocketConsumer(AsyncJsonWebsocketConsumer):
             raise InvalidFormatError(f"Can't parse event: {content}")
 
     async def _handle_event(self, event: Event):
+        logger.info(f"Handling event: {event}")
+
         handler = self.handlers.get(event.type)
         if callable(handler):
             return await handler(self, event)
@@ -102,8 +104,9 @@ class EventBasedAsyncWebsocketConsumer(AsyncJsonWebsocketConsumer):
         return decorator
 
     async def receive_json(self, content: dict, **kwargs):
-        try:
+        logger.info(f"Received JSON: {content}")
 
+        try:
             event = await self._parse_event(content=content)
 
             if event:

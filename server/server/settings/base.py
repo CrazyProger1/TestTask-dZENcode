@@ -30,6 +30,14 @@ SITE_URL = env("SITE_URL", str)
 # CORS
 CORS_ALLOW_ALL_ORIGINS = True
 
+# CSRF
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.onrender.com/",
+    "https://test-task-dzencode-web.onrender.com/",
+    "https://*",
+    "http://*",
+]
+
 # Application definition
 INSTALLED_APPS = [
     "daphne",

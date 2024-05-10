@@ -42,14 +42,14 @@ class TestCommentAttachmentViewSet(APITestCase):
         self.assertEqual(len(response.data["results"]), 1)
 
     def test_retrieve_attachment(self):
-        response = self.client.get(f"/api/v1/comments/{self.comment.pk}/attachments/1/")
+        response = self.client.get(f"/api/v1/comments/{self.comment.pk}/attachments/{self.attachment.pk}/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["type"], "TXT")
 
     def test_update_attachment(self):
         data = {"file": self.generate_photo_file()}
         response = self.client.patch(
-            f"/api/v1/comments/{self.comment.pk}/attachments/1/",
+            f"/api/v1/comments/{self.comment.pk}/attachments/{self.attachment.pk}/",
             data,
             format="multipart",
         )
@@ -59,7 +59,7 @@ class TestCommentAttachmentViewSet(APITestCase):
 
     def test_delete_attachment(self):
         response = self.client.delete(
-            f"/api/v1/comments/{self.comment.pk}/attachments/1/"
+            f"/api/v1/comments/{self.comment.pk}/attachments/{self.attachment.pk}/"
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(

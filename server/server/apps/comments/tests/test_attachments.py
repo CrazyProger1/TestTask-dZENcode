@@ -42,7 +42,9 @@ class TestCommentAttachmentViewSet(APITestCase):
         self.assertEqual(len(response.data["results"]), 1)
 
     def test_retrieve_attachment(self):
-        response = self.client.get(f"/api/v1/comments/{self.comment.pk}/attachments/{self.attachment.pk}/")
+        response = self.client.get(
+            f"/api/v1/comments/{self.comment.pk}/attachments/{self.attachment.pk}/"
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["type"], "TXT")
 

@@ -13,5 +13,5 @@ api_v1_docs_view = get_schema_view(
     ),
     url=settings.SITE_URL,
     public=True,
-    permission_classes=[permissions.AllowAny]
+    permission_classes=[permissions.AllowAny],
 )

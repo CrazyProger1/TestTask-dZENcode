@@ -7,7 +7,7 @@ from rest_framework.test import APIClient, APITestCase
 from server.apps.comments.models import Comment, CommentAttachment
 
 
-class CommentAttachmentViewSetTests(APITestCase):
+class TestCommentAttachmentViewSet(APITestCase):
     def setUp(self):
         self.client = APIClient()
         self.user = User.objects.create_user(

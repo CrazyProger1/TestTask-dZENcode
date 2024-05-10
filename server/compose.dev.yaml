@@ -1,4 +1,19 @@
 services:
+  db:
+    image: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=db
+      - POSTGRES_PORT=5432
+    ports:
+      - 5432:5432
+    networks:
+      - postgres
+
   redis:
     image: redis
     ports:
@@ -10,16 +25,26 @@ services:
     build:
       context: .
     restart: always
-    environment:
-      - DJANGO_SETTINGS_MODULE=server.settings.development
     ports:
       - 8000:8000
+    environment:
+      - DJANGO_SETTINGS_MODULE=server.settings.development
+    env_file:
+      - env/development.env.example
     networks:
+      - postgres
       - redis
     depends_on:
+      - db
       - redis
 
+
+
+volumes:
+  postgres_data:
 
 networks:
   redis:
+    driver: bridge
+  postgres:
     driver: bridge

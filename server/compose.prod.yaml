@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+    ports:
+      - 5432:5432
+    networks:
+      - postgres
+
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+    networks:
+      - redis
+
+  web:
+    build:
+      context: .
+    restart: always
+    ports:
+      - 8000:8000
+    networks:
+      - postgres
+      - redis
+    depends_on:
+      - db
+      - redis
+
+
+
+volumes:
+  postgres_data:
+
+networks:
+  redis:
+    driver: bridge
+  postgres:
+    driver: bridge

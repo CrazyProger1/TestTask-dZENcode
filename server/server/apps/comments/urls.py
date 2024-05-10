@@ -1,13 +1,13 @@
 from django.urls import path, include
 from rest_framework import routers
 
-from .views import (
+from server.apps.comments.views import (
     CommentViewSet,
     CommentLikeViewSet,
     ReplyViewSet,
     CommentAttachmentViewSet,
 )
-from .consumers import CommentConsumer
+from server.apps.comments.consumers import CommentConsumer
 
 router = routers.DefaultRouter()
 
@@ -36,5 +36,5 @@ urlpatterns = [
 ]
 
 ws_urlpatterns = [
-    path("ws/comments", CommentConsumer.as_asgi(), name="ws-comments")
+    path("ws/comments/", CommentConsumer.as_asgi(), name="ws-comments"),
 ]

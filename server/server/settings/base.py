@@ -8,6 +8,8 @@ env = environ.Env(
     USE_I18N=(bool, True),
     USE_TZ=(bool, True),
     CONTACT_EMAIL=(str, "crazyproger1@gmail.com"),
+    REDIS_HOST=(str, "localhost"),
+    REDIS_PORT=(int, 6379),
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -46,6 +48,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -96,7 +99,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Rest framework settings
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
-    "PAGE_SIZE": 100,
+    "PAGE_SIZE": 25,
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -124,6 +127,13 @@ USE_TZ = env("USE_TZ", bool)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "static"
+
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -149,4 +159,11 @@ LOGGING = {
             "propagate": False,
         },
     },
+}
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {"hosts": [(env("REDIS_HOST"), env("REDIS_PORT"))]},
+    }
 }

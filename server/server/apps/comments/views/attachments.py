@@ -21,13 +21,15 @@ class CommentAttachmentViewSet(CommentParentViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, CanAddAttachments)
 
     def perform_create(self, serializer):
-        comment = self.get_parent_object()
+        comment = self.get_parent_object_or_404()
         mark_comment_has_attachment(comment=comment)
         serializer.save(comment=comment)
 
     def get_queryset(self):
         comment = self.get_parent_object()
-        return get_comment_attachments(comment=comment)
+        if comment:
+            return get_comment_attachments(comment=comment)
+        return self.queryset
 
     @decorators.action(detail=True, methods=["get"])
     def file(self, request, comment_id: int, pk: int):

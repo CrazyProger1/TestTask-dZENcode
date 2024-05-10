@@ -1,3 +1,4 @@
+from django.http import Http404
 from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import (
@@ -28,8 +29,11 @@ class ReplyViewSet(CommentParentViewSet):
     filterset_class = CommentFilter
 
     def perform_create(self, serializer):
-        serializer.save(reply_to=self.get_parent_object())
+        comment = self.get_parent_object_or_404()
+        serializer.save(reply_to=comment)
 
     def get_queryset(self):
         comment = self.get_parent_object()
-        return get_comment_replies(comment=comment)
+        if comment:
+            return get_comment_replies(comment=comment)
+        return self.queryset

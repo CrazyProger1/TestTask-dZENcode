@@ -10,7 +10,7 @@ env = environ.Env(
     CONTACT_EMAIL=(str, "crazyproger1@gmail.com"),
     REDIS_HOST=(str, "localhost"),
     REDIS_PORT=(int, 6379),
-    SITE_URL=(str, "http://localhost:8000/")
+    SITE_URL=(str, "http://localhost:8000/"),
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.

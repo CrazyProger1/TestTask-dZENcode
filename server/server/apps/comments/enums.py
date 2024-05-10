@@ -6,3 +6,4 @@ class WebsocketEvents(str, Enum):
     DISCONNECTED = "disconnected"
     CREATE_COMMENT = "comments.create"
     READ_COMMENTS = "comments.read"
+    READ_REPLIES = "comments.replies.read"

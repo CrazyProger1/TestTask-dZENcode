@@ -29,7 +29,7 @@ class EventBasedAsyncWebsocketConsumer(AsyncJsonWebsocketConsumer):
     handlers: dict[str, Callable] = {}
 
     async def _send_response(
-        self, success: bool, data: dict | None = None, event_type: str | None = None
+            self, success: bool, data: dict | None = None, event_type: str | None = None
     ):
         logger.info(f"Sending response: {data}")
 

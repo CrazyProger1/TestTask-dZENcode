@@ -48,6 +48,10 @@ Supported events:
 - `comments.read` - get paginated comment list
 - `comments.replies.read` - get paginated list of comment-replies
 
+### Schemas
+
+Create comment schema:
+
 ```json
 {
   "type": "comments.create",
@@ -59,6 +63,29 @@ Supported events:
   }
 }
 ```
+
+Successful response schema:
+
+```json
+{
+  "type": "comments.create",
+  "success": true,
+  "data": {
+    "id": 0,
+    "likes_count": 0,
+    "dislikes_count": 0,
+    "text": "test comment",
+    "created_at": "datatime",
+    "has_attachment": false,
+    "user": 0,
+    "reply_to": null
+  }
+}
+```
+
+--- 
+
+Read comments schema:
 
 ```json
 {
@@ -84,6 +111,36 @@ Supported events:
 }
 ```
 
+Successful response schema:
+
+```json
+{
+  "type": "comments.read",
+  "success": true,
+  "data": {
+    "count": 0,
+    // all results count
+    "results": [
+      // paginated results
+      {
+        "id": 0,
+        "likes_count": 0,
+        "dislikes_count": 0,
+        "text": "test comment",
+        "created_at": "datatime",
+        "has_attachment": false,
+        "user": 0,
+        "reply_to": null
+      }
+    ]
+  }
+}
+```
+
+---
+
+Read replies schema:
+
 ```json
 {
   "type": "comments.replies.read",
@@ -106,6 +163,32 @@ Supported events:
     // by default, pagination limit
     "offset": 0
     // by default, pagination offset
+  }
+}
+```
+
+Successful response schema:
+
+```json
+{
+  "type": "comments.replies.read",
+  "success": true,
+  "data": {
+    "count": 0,
+    // all results count
+    "results": [
+      // paginated results
+      {
+        "id": 0,
+        "likes_count": 0,
+        "dislikes_count": 0,
+        "text": "test comment",
+        "created_at": "datatime",
+        "has_attachment": false,
+        "user": 0,
+        "reply_to": 0
+      }
+    ]
   }
 }
 ```

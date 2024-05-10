@@ -18,7 +18,7 @@ from server.apps.comments.views.comments import CommentParentViewSet
 class CommentAttachmentViewSet(CommentParentViewSet):
     queryset = get_all_attachments()
     serializer_class = CommentAttachmentSerializer
-    permission_classes = (permissions.IsAuthenticated, CanAddAttachments)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, CanAddAttachments)
 
     def perform_create(self, serializer):
         comment = self.get_parent_object()

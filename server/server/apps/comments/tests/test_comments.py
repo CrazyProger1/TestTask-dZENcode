@@ -26,9 +26,9 @@ class TestCommentViewSet(APITestCase):
         text = "test comment"
 
         response = self.client.post("/api/v1/comments/", data={"text": text})
-
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Comment.objects.get(pk=1).text, text)
+
+        self.assertEqual(Comment.objects.get(pk=response.data["id"]).text, text)
 
     def test_list_comments(self):
         Comment.objects.create(user=self.user, text="comment 1")

@@ -2,7 +2,7 @@ import json
 import logging
 from dataclasses import dataclass, field
 from functools import wraps
-from typing import Callable
+from typing import Callable, Container
 
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from django.contrib.auth.models import User, AnonymousUser
@@ -26,7 +26,7 @@ class Event:
 
 class EventBasedAsyncWebsocketConsumer(AsyncJsonWebsocketConsumer):
     group: str
-    handlers: dict[str, Callable] = {}
+    _handlers: dict[str, Callable] = {}
 
     async def _send_response(
         self, success: bool, data: dict | None = None, event_type: str | None = None
@@ -62,7 +62,7 @@ class EventBasedAsyncWebsocketConsumer(AsyncJsonWebsocketConsumer):
     async def _handle_event(self, event: Event):
         logger.info(f"Handling event: {event}")
 
-        handler = self.handlers.get(event.type)
+        handler = self._handlers.get(event.type)
         if callable(handler):
             return await handler(self, event)
 
@@ -90,15 +90,20 @@ class EventBasedAsyncWebsocketConsumer(AsyncJsonWebsocketConsumer):
 
     @classmethod
     def event(cls, event_type: str, /, *, auth_required: bool = False):
+
         def decorator(target: Callable):
+            while hasattr(target, "__wrapped__"):
+                target = target.__wrapped__
+
             @wraps(target)
             async def wrapper(consumer, event: Event):
                 if auth_required:
                     if isinstance(event.user, AnonymousUser):
                         raise AuthenticationError("Authorization required")
+
                 return await target(consumer, event)
 
-            cls.handlers[event_type] = wrapper
+            cls._handlers[event_type] = wrapper
             return wrapper
 
         return decorator

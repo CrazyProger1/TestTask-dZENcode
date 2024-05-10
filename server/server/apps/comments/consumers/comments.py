@@ -4,7 +4,7 @@ from server.apps.comments.constants import COMMENTS_GROUP
 from server.apps.comments.enums import WebsocketEvents
 from server.apps.comments.serializers import CommentSerializer
 from server.apps.comments.exceptions import ValidationError
-from server.apps.comments.services import get_parent_comments
+from server.apps.comments.services import get_parent_comments, get_reply_comments
 from server.utils.django.channels.consumers import (
     EventBasedAsyncWebsocketConsumer,
     Event,
@@ -29,13 +29,17 @@ def read_comments_from_db(
         order_by: tuple[str] = ("id",),
         filters: dict | None = None,
         pagination: tuple = (25, 0),
+        replies: bool = False,
 ):
     if not filters:
         filters = {}
 
     limit, offset = pagination
 
-    comments = get_parent_comments()
+    if not replies:
+        comments = get_parent_comments()
+    else:
+        comments = get_reply_comments()
 
     queryset = comments.order_by(*order_by).filter(**filters)[offset: offset + limit]
     serializer = CommentSerializer(data=queryset, many=True)
@@ -80,6 +84,7 @@ async def create_comment(consumer: CommentConsumer, event: Event):
     return data
 
 
+@CommentConsumer.event(WebsocketEvents.READ_REPLIES)
 @CommentConsumer.event(WebsocketEvents.READ_COMMENTS)
 async def read_comments(consumer: CommentConsumer, event: Event):
     order_by = event.data.get("order_by", ("-created_at",))
@@ -87,8 +92,11 @@ async def read_comments(consumer: CommentConsumer, event: Event):
     limit = event.data.get("limit", 25)
     offset = event.data.get("offset", 0)
 
+    replies = event.type == WebsocketEvents.READ_REPLIES
+
     return await read_comments_from_db(
         order_by=order_by,
         filters=filters,
         pagination=(limit, offset),
+        replies=replies,
     )

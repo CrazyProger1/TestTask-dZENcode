@@ -20,34 +20,42 @@ class TestCommentLikeViewSet(TestCase):
 
     def test_create_like(self):
         data = {"positive": True}
-        response = self.client.post("/api/v1/comments/1/likes/", data, format="json")
+        response = self.client.post(f"/api/v1/comments/{self.comment.pk}/likes/", data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertTrue(CommentLike.objects.filter(user=self.user, comment=self.comment).exists())
+        self.assertTrue(
+            CommentLike.objects.filter(user=self.user, comment=self.comment).exists()
+        )
 
     def test_recreate_existing_like(self):
-        like = CommentLike.objects.create(user=self.user, comment=self.comment, positive=True)
+        like = CommentLike.objects.create(
+            user=self.user, comment=self.comment, positive=True
+        )
         data = {"positive": False}
-        response = self.client.post("/api/v1/comments/1/likes/", data, format="json")
+        response = self.client.post(f"/api/v1/comments/{self.comment.pk}/likes/", data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         like.refresh_from_db()
         self.assertFalse(like.positive)
 
     def test_list_likes(self):
         CommentLike.objects.create(user=self.user, comment=self.comment, positive=True)
-        response = self.client.get("/api/v1/comments/1/likes/")
+        response = self.client.get(f"/api/v1/comments/{self.comment.pk}/likes/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["results"]), 1)
 
     def test_update_like(self):
-        like = CommentLike.objects.create(user=self.user, comment=self.comment, positive=True)
+        like = CommentLike.objects.create(
+            user=self.user, comment=self.comment, positive=True
+        )
         data = {"positive": False}
-        response = self.client.patch("/api/v1/comments/1/likes/1/", data, format="json")
+        response = self.client.patch(f"/api/v1/comments/{self.comment.pk}/likes/{like.pk}/", data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         like.refresh_from_db()
         self.assertFalse(like.positive)
 
     def test_delete_like(self):
-        CommentLike.objects.create(user=self.user, comment=self.comment, positive=True)
-        response = self.client.delete("/api/v1/comments/1/likes/1/")
+        like = CommentLike.objects.create(user=self.user, comment=self.comment, positive=True)
+        response = self.client.delete(f"/api/v1/comments/{self.comment.pk}/likes/{like.pk}/")
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(CommentLike.objects.filter(user=self.user, comment=self.comment).exists())
+        self.assertFalse(
+            CommentLike.objects.filter(user=self.user, comment=self.comment).exists()
+        )

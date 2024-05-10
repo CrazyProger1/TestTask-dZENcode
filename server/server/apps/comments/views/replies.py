@@ -18,7 +18,10 @@ from server.apps.comments.views.comments import CommentParentViewSet
 class ReplyViewSet(CommentParentViewSet):
     queryset = get_reply_comments()
     serializer_class = ReplyCommentSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsCommentOwnerOrReadOnly)
+    permission_classes = (
+        permissions.IsAuthenticatedOrReadOnly,
+        IsCommentOwnerOrReadOnly,
+    )
     filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
     ordering_fields = ("created_at",)
     ordering = "-created_at"

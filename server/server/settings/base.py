@@ -31,7 +31,7 @@ SITE_URL = env("SITE_URL", str)
 CORS_ALLOW_ALL_ORIGINS = True
 
 # CSRF
-CSRF_TRUSTED_ORIGINS = ["*"]
+CSRF_TRUSTED_ORIGINS = ['https://*']
 
 # Application definition
 INSTALLED_APPS = [

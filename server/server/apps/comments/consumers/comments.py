@@ -26,9 +26,9 @@ def create_comment_in_db(serializer: CommentSerializer, user) -> dict:
 
 @database_sync_to_async
 def read_comments_from_db(
-    order_by: tuple[str] = ("id",),
-    filters: dict | None = None,
-    pagination: tuple = (25, 0),
+        order_by: tuple[str] = ("id",),
+        filters: dict | None = None,
+        pagination: tuple = (25, 0),
 ):
     if not filters:
         filters = {}
@@ -37,7 +37,7 @@ def read_comments_from_db(
 
     comments = get_parent_comments()
 
-    queryset = comments.order_by(*order_by).filter(**filters)[offset : offset + limit]
+    queryset = comments.order_by(*order_by).filter(**filters)[offset: offset + limit]
     serializer = CommentSerializer(data=queryset, many=True)
     serializer.is_valid()
 

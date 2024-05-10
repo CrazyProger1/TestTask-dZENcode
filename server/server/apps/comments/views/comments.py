@@ -17,7 +17,7 @@ from server.apps.comments.services import (
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = get_all_comments()
     serializer_class = CommentSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
     ordering_fields = ("created_at",)
     ordering = "-created_at"

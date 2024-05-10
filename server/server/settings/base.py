@@ -10,6 +10,7 @@ env = environ.Env(
     CONTACT_EMAIL=(str, "crazyproger1@gmail.com"),
     REDIS_HOST=(str, "localhost"),
     REDIS_PORT=(int, 6379),
+    SITE_URL=(str, "http://localhost:8000/")
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -24,6 +25,7 @@ APP = "Comment-System"
 DESCRIPTION = "Comment-System API Server"
 LICENCE = "MIT License"
 CONTACT_EMAIL = env("CONTACT_EMAIL", str)
+SITE_URL = env("SITE_URL", str)
 
 # CORS
 CORS_ALLOW_ALL_ORIGINS = True
@@ -40,6 +42,7 @@ INSTALLED_APPS = [
     "channels",
     "drf_yasg",
     "rest_framework",
+    "corsheaders",
     "django_filters",
     "server.apps.accounts",
     "server.apps.comments",
@@ -50,6 +53,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",

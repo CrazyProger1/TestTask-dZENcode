@@ -13,6 +13,10 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = "__all__"
         read_only_fields = ("created_at", "user", "has_attachment")
 
+    def validate_text(self, text: str):
+        print(text)
+        return text
+
     def get_likes_count(self, comment: Comment):
         return count_likes(comment=comment)
 

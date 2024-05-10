@@ -10,7 +10,11 @@ class ReplyCommentSerializer(CommentSerializer):
             "created_at",
             "reply_to",
             "user",
+            "has_attachment",
         )
 
     def save(self, **kwargs):
-        return super().save(**kwargs, user=self.context["request"].user)
+        user = kwargs.pop("user", None)
+        if not user:
+            user = self.context["request"].user
+        return super().save(**kwargs, user=user)

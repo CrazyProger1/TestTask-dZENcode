@@ -30,6 +30,9 @@ SITE_URL = env("SITE_URL", str)
 # CORS
 CORS_ALLOW_ALL_ORIGINS = True
 
+# CSRF
+CSRF_TRUSTED_ORIGINS = ["*"]
+
 # Application definition
 INSTALLED_APPS = [
     "daphne",

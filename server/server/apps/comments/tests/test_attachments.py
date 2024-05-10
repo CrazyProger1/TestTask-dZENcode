@@ -18,9 +18,7 @@ class TestCommentAttachmentViewSet(APITestCase):
         )
         self.comment = Comment.objects.create(text="Test comment", user=self.user)
         self.attachment = CommentAttachment.objects.create(
-            comment=self.comment,
-            file="test_file.txt",
-            type="TXT"
+            comment=self.comment, file="test_file.txt", type="TXT"
         )
         self.client.force_authenticate(user=self.user)
         self.photo_filename = "test.png"
@@ -33,7 +31,9 @@ class TestCommentAttachmentViewSet(APITestCase):
 
     def test_create_attachment(self):
         data = {"file": self.generate_photo_file()}
-        response = self.client.post(f"/api/v1/comments/{self.comment.pk}/attachments/", data, format="multipart")
+        response = self.client.post(
+            f"/api/v1/comments/{self.comment.pk}/attachments/", data, format="multipart"
+        )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_list_attachments(self):
@@ -48,12 +48,20 @@ class TestCommentAttachmentViewSet(APITestCase):
 
     def test_update_attachment(self):
         data = {"file": self.generate_photo_file()}
-        response = self.client.patch(f"/api/v1/comments/{self.comment.pk}/attachments/1/", data, format="multipart")
+        response = self.client.patch(
+            f"/api/v1/comments/{self.comment.pk}/attachments/1/",
+            data,
+            format="multipart",
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.attachment.refresh_from_db()
         self.assertEqual(self.attachment.type, "IMG")
 
     def test_delete_attachment(self):
-        response = self.client.delete(f"/api/v1/comments/{self.comment.pk}/attachments/1/")
+        response = self.client.delete(
+            f"/api/v1/comments/{self.comment.pk}/attachments/1/"
+        )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(CommentAttachment.objects.filter(pk=self.attachment.pk).exists())
+        self.assertFalse(
+            CommentAttachment.objects.filter(pk=self.attachment.pk).exists()
+        )

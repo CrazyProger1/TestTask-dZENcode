@@ -29,7 +29,7 @@ def read_comments_from_db(
         order_by: tuple[str] = ("id",),
         filters: dict | None = None,
         pagination: tuple = (25, 0),
-        replies: bool = False
+        replies: bool = False,
 ):
     if not filters:
         filters = {}
